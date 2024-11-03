@@ -1,0 +1,26 @@
+<resources>
+    <!-- Other styles... -->
+
+    <style name="CircleImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20%</item>
+    </style>
+
+    <style name="RoundedImageButton">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="CustomRoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">40%</item> <!-- This will make the image fully rounded -->
+    </style>
+
+    <style name="Theme.YourAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">#2596be</item>
+        <!-- For light status bar icons -->
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+</resources>

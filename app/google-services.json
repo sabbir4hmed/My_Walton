@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "525396831802",
+    "project_id": "push-notify-14b8f",
+    "storage_bucket": "push-notify-14b8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525396831802:android:799100ed08f89dc2dbcf03",
+        "android_client_info": {
+          "package_name": "com.sabbir.walton.mywalton"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbO7r33QhlvvxoYuhed6JJVFNbgV2gmgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

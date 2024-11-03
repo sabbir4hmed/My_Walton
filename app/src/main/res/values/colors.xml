@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="light_status_bar">#FFFFFF</color> <!-- light color for status bar -->
+    <color name="dark_status_bar">#000000</color> <!-- dark color for status bar -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="skytint">#87B9DE</color>
+</resources>

@@ -1,8 +1,11 @@
 package com.sabbir.walton.mywalton;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.Insets;
@@ -10,6 +13,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +35,8 @@ public class ServiceCenter extends AppCompatActivity {
     private RecyclerView recyclerView;
     private DataAdapter adapter;
     private List<DataModel> dataModelList;
+    private DatabaseReference databaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,20 +47,25 @@ public class ServiceCenter extends AppCompatActivity {
         SearchView searchView = findViewById(R.id.searchView);
         searchView.setQueryHint("Search location and tap to call");
 
-        dataModelList = loaddatafromjson();
-        adapter = new DataAdapter(this,dataModelList);
+        // Initialize Firebase
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("WSMS Location");
+
+        dataModelList = new ArrayList<>();
+        adapter = new DataAdapter(this, dataModelList);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Ensure the hint is always shown
+        // Load data from Firebase
+        loadDataFromFirebase();
+
+        // SearchView setup code remains the same
         try {
             Field mSearchSrcTextViewField = SearchView.class.getDeclaredField("mSearchSrcTextView");
             mSearchSrcTextViewField.setAccessible(true);
-            SearchView.SearchAutoComplete mSearchSrcTextView = (SearchView.SearchAutoComplete) mSearchSrcTextViewField.get(searchView);
-
+            @SuppressLint("RestrictedApi") SearchView.SearchAutoComplete mSearchSrcTextView =
+                    (SearchView.SearchAutoComplete) mSearchSrcTextViewField.get(searchView);
             mSearchSrcTextView.setHint("Search location and tap to call");
-           // mSearchSrcTextView.setHintTextColor(getResources().getColor(R.color.hint_color)); // Optional: set hint text color
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,45 +82,39 @@ public class ServiceCenter extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
+    private void loadDataFromFirebase() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                dataModelList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    String contact = dataSnapshot.child("contact").getValue(String.class);
+                    String address = dataSnapshot.child("location").getValue(String.class);
+
+                    dataModelList.add(new DataModel(name, address, contact));
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ServiceCenter.this, "Error loading data: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void filter(String text) {
         List<DataModel> filteredlist = new ArrayList<>();
-        for(DataModel item : dataModelList)
-        {
-            if(item.getName().toLowerCase().contains(text.toLowerCase()) || item.getAddress().toLowerCase().contains(text.toLowerCase()))
-            {
+        for(DataModel item : dataModelList) {
+            if(item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                    item.getLocation().toLowerCase().contains(text.toLowerCase())) {
                 filteredlist.add(item);
             }
-            adapter.filterList(filteredlist);
         }
+        adapter.filterList(filteredlist);
     }
-
-    private List<DataModel> loaddatafromjson() {
-        List<DataModel> dataModels  =new ArrayList<>();
-        try {
-            InputStream is = getAssets().open("data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            String json = new String(buffer, "UTF-8");
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray jsonArray = jsonObject.getJSONArray("WSMS Location");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                String name = obj.getString("name");
-                String contact = obj.getString("contact");
-                String address = obj.getString("location");
-                dataModels.add(new DataModel(name,address,contact));
-            }
-        }
-        catch (IOException | JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return dataModels;
-    }
-
-    }
+}

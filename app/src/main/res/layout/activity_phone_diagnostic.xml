@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:rowCount="3"
             android:columnCount="3"
+            android:elevation="0dp"
             android:padding="10dp">
 
             <Button
@@ -28,6 +29,7 @@
                 android:layout_columnWeight="1"
                 android:layout_margin="2dp"
                 android:background="@drawable/button_background"
+                android:elevation="0dp"
                 android:text="Sim Card Test"
                 android:textSize="10sp"
                 android:maxLines="1"
@@ -296,7 +298,8 @@
                 android:text="Full Test"
                 android:textSize="10sp"
                 android:maxLines="1"
-                android:ellipsize="end" />
+                android:ellipsize="end"
+                android:elevation="0dp"/>
 
         </GridLayout>
     </ScrollView>
